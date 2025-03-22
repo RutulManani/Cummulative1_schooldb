@@ -1,0 +1,102 @@
+﻿@model Cummulative1_schooldb.Models.Teacher
+@{
+    ViewBag.Title = "Show";
+}
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f9f9f9;
+    }
+
+    #containershow {
+        max-width: 600px;
+        margin: auto;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+        text-align: center;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+
+    th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
+
+    th {
+        background: #f2f2f2;
+    }
+
+    a {
+        color: black;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+    .navlink {
+        display: block;
+        margin-bottom: 10px;
+        text-align: center;
+    }
+</style>
+
+<a class="navlink" href="/TeacherPage/List">Back To Teachers</a>
+
+<div id="containershow">
+    <h2>Teacher Information</h2>
+    <table>
+        <tr>
+            <th>ID</th>
+            <td>@Model.TeacherId</td>
+        </tr>
+        <tr>
+            <th>Full Name</th>
+            <td>@Model.TeacherFname @Model.TeacherLname</td>
+        </tr>
+        <tr>
+            <th>Employee Number</th>
+            <td>@Model.EmployeeNumber</td>
+        </tr>
+        <tr>
+            <th>Hire Date</th>
+            <td>@Model.HireDate</td>
+        </tr>
+        <tr>
+            <th>Salary</th>
+            <td>@Model.Salary</td>
+        </tr>
+        <tr>
+            <th>Courses</th>
+            <td>
+                @if (Model.Courses != null && Model.Courses.Any())
+
+                {
+                    foreach (var _class in Model.Courses)
+                    {
+                        <div><a href="/Course/Show/@_class.CourseId">@_class.CourseCode</a> : @_class.CourseName</div>
+                    }
+                }
+                else
+                {
+                    <div>No classes assigned</div>
+                }
+            </td>
+        </tr>
+
+    </table>
+</div>
