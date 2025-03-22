@@ -11,7 +11,6 @@ This project is a Minimum Viable Product (MVP) for managing the Teachers table i
 
 - **API Endpoints**:
   - `GET /api/TeacherData/ListTeachers`: Returns a list of all teachers.
-  - `GET /api/TeacherData/FindTeacher/{id}`: Returns detailed information about a specific teacher by ID.
 
 - **Web Pages**:
   - `/TeacherPage/List`: Displays a list of all teachers with a search bar.
