@@ -63,51 +63,6 @@ namespace Cummulative1_schooldb.Controllers
 
             Conn.Close();
             return Teachers;
-        }
-
-
-
-        /// <summary>
-        /// Retrieves detailed information of a specific teacher based on the provided teacher ID.
-        /// </summary>
-        /// <param name="id">The unique identifier of the teacher.</param>
-        /// <returns>A Teacher object containing the teacher's details.</returns>
-        [HttpGet]
-        [Route("api/TeacherData/FindTeacher/{id}")]
-        public Teacher FindTeacher(int id)
-        {
-            // Create a new Teacher
-            Teacher NewTeacher = new Teacher();
-
-            // Create a connection to MySQL database
-            MySqlConnection Conn = Cummulative1_schooldb.AccessDatabase();
-            Conn.Open();
-
-            // Define an SQL command to fetch teacher details using the given ID
-            MySqlCommand cmd = Conn.CreateCommand();
-            cmd.CommandText = "SELECT * FROM Teachers WHERE teacherid = @id";
-            cmd.Parameters.AddWithValue("@id", id);
-            cmd.Prepare();
-
-            // Execute the query
-            MySqlDataReader ResultSet = cmd.ExecuteReader();
-
-
-            while (ResultSet.Read())
-            {
-                NewTeacher.TeacherId = Convert.ToInt32(ResultSet["teacherId"]);
-                NewTeacher.TeacherFname = ResultSet["teacherFname"].ToString();
-                NewTeacher.TeacherLname = ResultSet["teacherLname"].ToString();
-                NewTeacher.EmployeeNumber = ResultSet["employeenumber"].ToString();
-                NewTeacher.HireDate = Convert.ToDateTime(ResultSet["hiredate"]);
-                NewTeacher.Salary = Convert.ToDecimal(ResultSet["salary"]);
-            }
-            ResultSet.Close();
-
-
-            // Close the database
-            Conn.Close();
-            return NewTeacher;
-        }
+        }     
     }
 }
