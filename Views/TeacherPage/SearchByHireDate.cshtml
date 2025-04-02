@@ -1,0 +1,125 @@
+@model IEnumerable<Cummulative1_schooldb.Models.Teacher>
+@{
+    ViewBag.Title = "Search Teachers by Hire Date";
+}
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f9f9f9;
+    }
+
+    #containerlist {
+        max-width: 800px;
+        margin: auto;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .navlink {
+        display: inline-block;
+        margin-bottom: 20px;
+        padding: 8px 15px;
+        background-color: #4CAF50;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        font-weight: bold;
+    }
+
+        .navlink:hover {
+            background-color: #45a049;
+            text-decoration: none;
+        }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    th, td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: left;
+    }
+
+    th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+    }
+
+    tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+
+    tr:hover {
+        background-color: #f1f1f1;
+    }
+
+    a {
+        color: #0066cc;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+    .no-results {
+        text-align: center;
+        padding: 20px;
+        font-style: italic;
+        color: #666;
+    }
+</style>
+
+<div id="containerlist">
+    <h2>Teachers Hired Between @ViewBag.MinDate.ToString("yyyy-MM-dd") and @ViewBag.MaxDate.ToString("yyyy-MM-dd")</h2>
+
+    <a href="/TeacherPage/List" class="navlink">Back to All Teachers</a>
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="no-results">
+            <p>No teachers were hired during this date range.</p>
+        </div>
+    }
+    else
+    {
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Employee Number</th>
+                    <th>Hire Date</th>
+                    <th>Salary</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var teacher in Model)
+                {
+                    <tr>
+                        <td>@teacher.TeacherId</td>
+                        <td>@teacher.TeacherFname @teacher.TeacherLname</td>
+                        <td>@teacher.EmployeeNumber</td>
+                        <td>@teacher.HireDate.ToString("yyyy-MM-dd")</td>
+                        <td>@teacher.Salary.ToString("C")</td>
+                        <td><a href="/TeacherPage/Show/@teacher.TeacherId">View Details</a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
