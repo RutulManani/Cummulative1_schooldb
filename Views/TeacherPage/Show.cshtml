@@ -42,6 +42,7 @@
         color: black;
         text-decoration: none;
         font-weight: bold;
+        justify-self: center;
     }
 
         a:hover {
@@ -50,12 +51,17 @@
 
     .navlink {
         display: block;
+        max-width: 300px;
         margin-bottom: 10px;
         text-align: center;
     }
 </style>
 
 <a class="navlink" href="/TeacherPage/List">Back To Teachers</a>
+
+<div style="margin-top: 20px; text-align: center;">
+    <a href="/TeacherPage/DeleteConfirm/@Model.TeacherId" class="navlink" style="background-color: #D1140E; color: white; padding: 8px 15px; border-radius: 4px;">Delete Teacher</a>
+</div>
 
 <div id="containershow">
     <h2>Teacher Information</h2>
