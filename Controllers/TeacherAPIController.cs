@@ -241,7 +241,7 @@ namespace Cummulative1_schooldb.Controllers
 
             cmd.ExecuteNonQuery();
             Conn.Close();
-            return Ok();
+            return Ok("Teacher added successfully");
         }
 
         /// <summary>
@@ -279,7 +279,7 @@ namespace Cummulative1_schooldb.Controllers
             int rowsAffected = deleteCmd.ExecuteNonQuery();
             Conn.Close();
 
-            return rowsAffected > 0 ? Ok() : (IHttpActionResult)NotFound();
+            return rowsAffected > 0 ? Ok("Teacher deleted successfully") : (IHttpActionResult)NotFound();
         }
     }
 }
