@@ -3,6 +3,56 @@
     ViewBag.Title = "Show";
 }
 
+<a class="navlink" href="/TeacherPage/List">Back To Teachers</a>
+
+<div style="margin-top: 20px; text-align: center;">
+    <a href="/TeacherPage/DeleteConfirm/@Model.TeacherId" class="navlink" style="background-color: #D1140E; color: white; padding: 8px 15px; border-radius: 4px;">Delete Teacher</a>
+</div>
+
+<div id="containershow">
+    <h2>Teacher Information</h2>
+    <table>
+        <tr>
+            <th>ID</th>
+            <td>@Model.TeacherId</td>
+        </tr>
+        <tr>
+            <th>Full Name</th>
+            <td>@Model.TeacherFname @Model.TeacherLname</td>
+        </tr>
+        <tr>
+            <th>Employee Number</th>
+            <td>@Model.EmployeeNumber</td>
+        </tr>
+        <tr>
+            <th>Hire Date</th>
+            <td>@Model.HireDate</td>
+        </tr>
+        <tr>
+            <th>Salary</th>
+            <td>@Model.Salary</td>
+        </tr>
+        <tr>
+            <th>Courses</th>
+            <td>
+                @if (Model.Courses != null && Model.Courses.Any())
+
+                {
+                    foreach (var _class in Model.Courses)
+                    {
+                        <div><a href="/Course/Show/@_class.CourseId">@_class.CourseCode</a> : @_class.CourseName</div>
+                    }
+                }
+                else
+                {
+                    <div>No classes assigned</div>
+                }
+            </td>
+        </tr>
+
+    </table>
+</div>
+
 <style>
     body {
         font-family: Arial, sans-serif;
@@ -56,53 +106,3 @@
         text-align: center;
     }
 </style>
-
-<a class="navlink" href="/TeacherPage/List">Back To Teachers</a>
-
-<div style="margin-top: 20px; text-align: center;">
-    <a href="/TeacherPage/DeleteConfirm/@Model.TeacherId" class="navlink" style="background-color: #D1140E; color: white; padding: 8px 15px; border-radius: 4px;">Delete Teacher</a>
-</div>
-
-<div id="containershow">
-    <h2>Teacher Information</h2>
-    <table>
-        <tr>
-            <th>ID</th>
-            <td>@Model.TeacherId</td>
-        </tr>
-        <tr>
-            <th>Full Name</th>
-            <td>@Model.TeacherFname @Model.TeacherLname</td>
-        </tr>
-        <tr>
-            <th>Employee Number</th>
-            <td>@Model.EmployeeNumber</td>
-        </tr>
-        <tr>
-            <th>Hire Date</th>
-            <td>@Model.HireDate</td>
-        </tr>
-        <tr>
-            <th>Salary</th>
-            <td>@Model.Salary</td>
-        </tr>
-        <tr>
-            <th>Courses</th>
-            <td>
-                @if (Model.Courses != null && Model.Courses.Any())
-
-                {
-                    foreach (var _class in Model.Courses)
-                    {
-                        <div><a href="/Course/Show/@_class.CourseId">@_class.CourseCode</a> : @_class.CourseName</div>
-                    }
-                }
-                else
-                {
-                    <div>No classes assigned</div>
-                }
-            </td>
-        </tr>
-
-    </table>
-</div>
