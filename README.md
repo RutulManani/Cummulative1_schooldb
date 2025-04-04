@@ -22,12 +22,10 @@ This project is a **Minimum Viable Product (MVP)** for managing the **Teachers**
 
 ## API Endpoints
 
-| Method | Endpoint | Description |
-|--------|---------|-------------|
-| `GET`  | `/api/TeacherData/ListTeachers`  | List all teachers |
-| `GET`  | `/api/TeacherData/FindTeacher/{id}` | Find a teacher by ID |
-| `POST` | `/api/TeacherData/AddTeacher` | Add a new teacher |
-| `DELETE` | `/api/TeacherData/DeleteTeacher/{id}` | Delete a teacher by ID |
+- `GET /api/TeacherData/ListTeachers` - List all teachers  
+- `GET /api/TeacherData/FindTeacher/{id}` - Find a teacher by ID  
+- `POST /api/TeacherData/AddTeacher` - Add a new teacher  
+- `POST /api/TeacherData/DeleteTeacher/{id}` - Delete a teacher  
 
 ## Validation Rules
 
