@@ -53,7 +53,7 @@
     }
 
     .delete-button {
-        background-color: #d9534f;
+        background-color: #D1140E;
         color: white;
         padding: 10px 15px;
         border: none;
@@ -124,9 +124,11 @@
     </table>
 
     <div class="button-container">
-        <a href="/TeacherPage/Show/@Model.TeacherId" class="cancel-button">Cancel</a>
-        <form method="POST" action="/TeacherPage/Delete/@Model.TeacherId" style="display: inline;">
-            <input type="submit" class="delete-button" value="Confirm Delete" />
-        </form>
+        @using (Html.BeginForm("Delete", "TeacherPage", new { id = Model.TeacherId }, FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            <a href="/TeacherPage/Show/@Model.TeacherId" class="cancel-button">Cancel</a>
+            <input type="submit" value="Confirm Delete" class="delete-button" />
+        }
     </div>
 </div>
