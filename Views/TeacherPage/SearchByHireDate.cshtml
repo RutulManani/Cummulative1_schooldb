@@ -3,6 +3,47 @@
     ViewBag.Title = "Search Teachers by Hire Date";
 }
 
+<div id="containerlist">
+    <h2>Teachers Hired Between @ViewBag.MinDate.ToString("yyyy-MM-dd") and @ViewBag.MaxDate.ToString("yyyy-MM-dd")</h2>
+
+    <a href="/TeacherPage/List" class="navlink">Back to All Teachers</a>
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="no-results">
+            <p>No teachers were hired during this date range.</p>
+        </div>
+    }
+    else
+    {
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Employee Number</th>
+                    <th>Hire Date</th>
+                    <th>Salary</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var teacher in Model)
+                {
+                    <tr>
+                        <td>@teacher.TeacherId</td>
+                        <td>@teacher.TeacherFname @teacher.TeacherLname</td>
+                        <td>@teacher.EmployeeNumber</td>
+                        <td>@teacher.HireDate.ToString("yyyy-MM-dd")</td>
+                        <td>@teacher.Salary.ToString("C")</td>
+                        <td><a href="/TeacherPage/Show/@teacher.TeacherId">View Details</a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
 <style>
     body {
         font-family: Arial, sans-serif;
@@ -81,45 +122,3 @@
         color: #666;
     }
 </style>
-
-<div id="containerlist">
-    <h2>Teachers Hired Between @ViewBag.MinDate.ToString("yyyy-MM-dd") and @ViewBag.MaxDate.ToString("yyyy-MM-dd")</h2>
-
-    <a href="/TeacherPage/List" class="navlink">Back to All Teachers</a>
-
-    @if (Model == null || !Model.Any())
-    {
-        <div class="no-results">
-            <p>No teachers were hired during this date range.</p>
-        </div>
-    }
-    else
-    {
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Employee Number</th>
-                    <th>Hire Date</th>
-                    <th>Salary</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var teacher in Model)
-                {
-                    <tr>
-                        <td>@teacher.TeacherId</td>
-                        <td>@teacher.TeacherFname @teacher.TeacherLname</td>
-                        <td>@teacher.EmployeeNumber</td>
-                        <td>@teacher.HireDate.ToString("yyyy-MM-dd")</td>
-                        <td>@teacher.Salary.ToString("C")</td>
-                        <td><a href="/TeacherPage/Show/@teacher.TeacherId">View Details</a></td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    }
-</div>
-
