@@ -171,39 +171,45 @@ namespace Cummulative1_schooldb.Controllers
         }
 
         /// <summary>
-        /// Adds a new Teacher to the database
+        /// Adds a new teacher to the system with validation checks
         /// </summary>
-        /// <param name="NewTeacher">Teacher object containing the new teacher's information</param>
+        /// <param name="NewTeacher">Teacher object containing the teacher's information</param>
         /// <returns>
-        /// HTTP 200 if successful
-        /// HTTP 400 if validation fails
+        /// - Teacher first and last name are required
+        /// - Hire date cannot be in the future
+        /// - Employee number must be 'T' followed by digits (e.g., T123)
+        /// - Employee number already exists
         /// Example request: POST /api/TeacherData/AddTeacher
+        /// Example request body: 
+        /// {
+        ///     "TeacherFname": "John",
+        ///     "TeacherLname": "Doe",
+        ///     "EmployeeNumber": "T123",
+        ///     "HireDate": "2023-01-15",
+        ///     "Salary": 55000.00
+        /// }
         /// </returns>
+        /// 
         [HttpPost]
         [Route("api/TeacherData/AddTeacher")]
         public IHttpActionResult AddTeacher([FromBody] Teacher NewTeacher)
         {
-            if (NewTeacher == null)
-            {
-                return BadRequest("Teacher data is required");
-            }
-
-            // Initiative 1: Validate teacher name isn't empty
+            // Initiative 1: Error Handling on Add when the Teacher Name is empty
             if (string.IsNullOrWhiteSpace(NewTeacher.TeacherFname) ||
                 string.IsNullOrWhiteSpace(NewTeacher.TeacherLname))
             {
                 return BadRequest("Teacher first and last name are required");
             }
 
-            // Initiative 2: Validate hire date isn't in the future
+            // Initiative 2: Error Handling on Add when the Teacher Hire Date is in the future
             if (NewTeacher.HireDate > DateTime.Now)
             {
                 return BadRequest("Hire date cannot be in the future");
             }
 
-            // Initiative 3: Validate employee number format (T followed by digits)
+            // Initiative 3: Error Handling on Add when the Employee Number is not “T” followed by digits
             if (string.IsNullOrWhiteSpace(NewTeacher.EmployeeNumber) ||
-                !System.Text.RegularExpressions.Regex.IsMatch(NewTeacher.EmployeeNumber, @"^T\d+$"))
+                !System.Text.RegularExpressions.Regex.IsMatch(NewTeacher.EmployeeNumber, @"^T[0-9]{3}$"))
             {
                 return BadRequest("Employee number must be 'T' followed by digits (e.g., T123)");
             }
@@ -211,11 +217,10 @@ namespace Cummulative1_schooldb.Controllers
             MySqlConnection Conn = Cummulative1_schooldb.AccessDatabase();
             Conn.Open();
 
-            // Initiative 4: Check for duplicate employee number
+            // Initiative 4: Error Handling on Add when the Employee Number is already taken by a different Teacher
             MySqlCommand checkCmd = Conn.CreateCommand();
             checkCmd.CommandText = "SELECT COUNT(*) FROM teachers WHERE employeenumber = @empnum";
             checkCmd.Parameters.AddWithValue("@empnum", NewTeacher.EmployeeNumber);
-            checkCmd.Prepare();
 
             if (Convert.ToInt32(checkCmd.ExecuteScalar()) > 0)
             {
@@ -223,9 +228,10 @@ namespace Cummulative1_schooldb.Controllers
                 return BadRequest("Employee number already exists");
             }
 
+            // Insert the new teacher
             MySqlCommand cmd = Conn.CreateCommand();
             cmd.CommandText = "INSERT INTO teachers (teacherfname, teacherlname, employeenumber, hiredate, salary) " +
-                             "VALUES (@fname, @lname, @empnum, @hiredate, @salary);";
+                             "VALUES (@fname, @lname, @empnum, @hiredate, @salary)";
 
             cmd.Parameters.AddWithValue("@fname", NewTeacher.TeacherFname);
             cmd.Parameters.AddWithValue("@lname", NewTeacher.TeacherLname);
@@ -233,73 +239,47 @@ namespace Cummulative1_schooldb.Controllers
             cmd.Parameters.AddWithValue("@hiredate", NewTeacher.HireDate);
             cmd.Parameters.AddWithValue("@salary", NewTeacher.Salary);
 
-            cmd.Prepare();
-
-            try
-            {
-                cmd.ExecuteNonQuery();
-                return Ok();
-            }
-            catch (MySqlException ex)
-            {
-                return BadRequest("Database error: " + ex.Message);
-            }
-            finally
-            {
-                Conn.Close();
-            }
+            cmd.ExecuteNonQuery();
+            Conn.Close();
+            return Ok();
         }
 
-
         /// <summary>
-        /// Deletes a teacher from the system
+        /// Deletes a teacher from the system by their ID
         /// </summary>
         /// <param name="id">The ID of the teacher to delete</param>
         /// <returns>
-        /// Status code 200 if successful
+        /// HTTP 200 OK if deletion was successful
+        /// HTTP 404 Not Found if teacher with specified ID doesn't exist
+        /// HTTP 400 Bad Request if ID is invalid (less than or equal to 0)
+        /// Note: This will first unassign any courses taught by this teacher
+        /// Example request: DELETE /api/TeacherData/DeleteTeacher/5
         /// </returns>
-        [HttpPost]
+
+        [HttpDelete]
         [Route("api/TeacherData/DeleteTeacher/{id}")]
         public IHttpActionResult DeleteTeacher(int id)
         {
-            if (id <= 0)
-            {
-                return BadRequest("Invalid Teacher ID");
-            }
+            if (id <= 0) return BadRequest("Invalid Teacher ID");
 
             MySqlConnection Conn = Cummulative1_schooldb.AccessDatabase();
             Conn.Open();
 
-            // First, unassign any courses from this teacher
+            // First unassign any courses from this teacher
             MySqlCommand unassignCmd = Conn.CreateCommand();
             unassignCmd.CommandText = "UPDATE courses SET teacherid = NULL WHERE teacherid = @id";
             unassignCmd.Parameters.AddWithValue("@id", id);
-            unassignCmd.Prepare();
             unassignCmd.ExecuteNonQuery();
 
             // Then delete the teacher
             MySqlCommand deleteCmd = Conn.CreateCommand();
             deleteCmd.CommandText = "DELETE FROM teachers WHERE teacherid = @id";
             deleteCmd.Parameters.AddWithValue("@id", id);
-            deleteCmd.Prepare();
 
-            try
-            {
-                int rowsAffected = deleteCmd.ExecuteNonQuery();
-                Conn.Close();
+            int rowsAffected = deleteCmd.ExecuteNonQuery();
+            Conn.Close();
 
-                if (rowsAffected == 0)
-                {
-                    return NotFound();
-                }
-
-                return Ok();
-            }
-            catch (MySqlException ex)
-            {
-                Conn.Close();
-                return BadRequest("Database error: " + ex.Message);
-            }
+            return rowsAffected > 0 ? Ok() : (IHttpActionResult)NotFound();
         }
     }
 }
