@@ -3,6 +3,45 @@
     ViewBag.Title = "New Teacher";
 }
 
+<a class="navlink" href="/TeacherPage/List">Back to Teachers</a>
+
+<div id="containernew">
+    <h2>Add New Teacher</h2>
+
+    @if (ViewBag.ErrorMessage != null)
+    {
+        <div class="error-message">
+            @ViewBag.ErrorMessage
+        </div>
+    }
+
+    <form method="POST" action="/TeacherPage/Create">
+        <div class="form-group">
+            <label for="TeacherFname">First Name:</label>
+            <input type="text" id="TeacherFname" name="TeacherFname" />
+        </div>
+        <div class="form-group">
+            <label for="TeacherLname">Last Name:</label>
+            <input type="text" id="TeacherLname" name="TeacherLname" />
+        </div>
+        <div class="form-group">
+            <label for="EmployeeNumber">Employee Number:</label>
+            <input type="text" id="EmployeeNumber" name="EmployeeNumber" required />
+        </div>
+        <div class="form-group">
+            <label for="HireDate">Hire Date:</label>
+            <input type="date" id="HireDate" name="HireDate" required />
+        </div>
+        <div class="form-group">
+            <label for="Salary">Salary:</label>
+            <input type="number" step="0.01" id="Salary" name="Salary" required />
+        </div>
+        <div class="form-group">
+            <input type="submit" class="button" value="Add Teacher" />
+        </div>
+    </form>
+</div>
+
 <style>
     body {
         font-family: Arial, sans-serif;
@@ -101,42 +140,3 @@
         margin-bottom: 5px;
     }
 </style>
-
-<a class="navlink" href="/TeacherPage/List">Back to Teachers</a>
-
-<div id="containernew">
-    <h2>Add New Teacher</h2>
-
-    @if (ViewBag.ErrorMessage != null)
-    {
-        <div class="error-message">
-            @ViewBag.ErrorMessage
-        </div>
-    }
-
-    <form method="POST" action="/TeacherPage/Create">
-        <div class="form-group">
-            <label for="TeacherFname">First Name:</label>
-            <input type="text" id="TeacherFname" name="TeacherFname" />
-        </div>
-        <div class="form-group">
-            <label for="TeacherLname">Last Name:</label>
-            <input type="text" id="TeacherLname" name="TeacherLname" />
-        </div>
-        <div class="form-group">
-            <label for="EmployeeNumber">Employee Number:</label>
-            <input type="text" id="EmployeeNumber" name="EmployeeNumber" required />
-        </div>
-        <div class="form-group">
-            <label for="HireDate">Hire Date:</label>
-            <input type="date" id="HireDate" name="HireDate" required />
-        </div>
-        <div class="form-group">
-            <label for="Salary">Salary:</label>
-            <input type="number" step="0.01" id="Salary" name="Salary" required />
-        </div>
-        <div class="form-group">
-            <input type="submit" class="button" value="Add Teacher" />
-        </div>
-    </form>
-</div>
