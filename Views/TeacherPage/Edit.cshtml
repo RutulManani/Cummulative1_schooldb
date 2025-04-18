@@ -1,0 +1,125 @@
+
+@model Cummulative1_schooldb.Models.Teacher
+@{
+    ViewBag.Title = "Edit Teacher";
+}
+
+<a class="navlink" href="/TeacherPage/Show/@Model.TeacherId">Back to Teacher</a>
+
+<div id="containeredit">
+    <h2>Edit Teacher</h2>
+
+    @if (ViewBag.ErrorMessage != null)
+    {
+        <div class="error-message">
+            @ViewBag.ErrorMessage
+        </div>
+    }
+
+    <form method="POST" action="/TeacherPage/Edit/@Model.TeacherId">
+        <div class="form-group">
+            <label for="TeacherFname">First Name:</label>
+            <input type="text" id="TeacherFname" name="TeacherFname" value="@Model.TeacherFname" />
+        </div>
+        <div class="form-group">
+            <label for="TeacherLname">Last Name:</label>
+            <input type="text" id="TeacherLname" name="TeacherLname" value="@Model.TeacherLname" />
+        </div>
+        <div class="form-group">
+            <label for="HireDate">Hire Date:</label>
+            <input type="date" id="HireDate" name="HireDate" value="@Model.HireDate.ToString("yyyy-MM-dd")" required />
+        </div>
+        <div class="form-group">
+            <label for="Salary">Salary:</label>
+            <input type="number" step="0.01" id="Salary" name="Salary" value="@Model.Salary" required />
+        </div>
+        <div class="form-group">
+            <input type="submit" class="button" value="Update Teacher" />
+        </div>
+    </form>
+</div>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f9f9f9;
+    }
+
+    #containeredit {
+        max-width: 600px;
+        margin: auto;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+
+    input[type="text"],
+    input[type="date"],
+    input[type="number"] {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+    .button {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+        .button:hover {
+            background-color: #45a049;
+        }
+
+    .navlink {
+        display: inline-block;
+        margin-bottom: 20px;
+        color: #0066cc;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+        .navlink:hover {
+            text-decoration: underline;
+        }
+
+    .error-message {
+        color: #d9534f;
+        background-color: #fdf7f7;
+        border: 1px solid #d9534f;
+        padding: 10px;
+        margin-bottom: 20px;
+        border-radius: 4px;
+    }
+
+    .field-validation-error {
+        color: #d9534f;
+        font-size: 0.9em;
+    }
+
+    input.input-validation-error {
+        border-color: #d9534f;
+    }
+</style>
