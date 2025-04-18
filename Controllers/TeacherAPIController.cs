@@ -127,26 +127,51 @@ namespace Cummulative1_schooldb.Controllers
             return Ok(NewTeacher);
         }
 
+
         /// <summary>
-        /// Searches for teachers by hire date range
+        /// Returns a list of teachers with advanced filtering options
         /// </summary>
-        /// <param name="minDate">Minimum hire date (inclusive)</param>
-        /// <param name="maxDate">Maximum hire date (inclusive)</param>
+        /// <param name="searchKey">Optional search term to filter by name, hire date, or salary</param>
+        /// <param name="minDate">Optional minimum hire date (inclusive)</param>
+        /// <param name="maxDate">Optional maximum hire date (inclusive)</param>
         /// <returns>
-        /// A list of Teacher objects hired within the date range
-        /// Example request: GET /api/TeacherData/SearchByHireDate?minDate=2000-01-01&maxDate=2010-12-31
+        /// A list of Teacher objects matching all provided criteria
+        /// Example request: GET /api/TeacherData/ListTeachersAdvanced
+        /// Example request with search: GET /api/TeacherData/ListTeachersAdvanced?searchKey=smith&minDate=2000-01-01&maxDate=2010-12-31
         /// </returns>
+        
         [HttpGet]
-        [Route("api/TeacherData/SearchByHireDate")]
-        public IEnumerable<Teacher> SearchByHireDate(DateTime minDate, DateTime maxDate)
+        [Route("api/TeacherData/ListTeachersAdvanced")]
+        public IEnumerable<Teacher> ListTeachersAdvanced(string searchKey = null, DateTime? minDate = null, DateTime? maxDate = null)
         {
             MySqlConnection Conn = Cummulative1_schooldb.AccessDatabase();
             Conn.Open();
 
             MySqlCommand cmd = Conn.CreateCommand();
-            cmd.CommandText = "SELECT * FROM Teachers WHERE hiredate BETWEEN @minDate AND @maxDate";
-            cmd.Parameters.AddWithValue("@minDate", minDate);
-            cmd.Parameters.AddWithValue("@maxDate", maxDate);
+
+            // Base query
+            cmd.CommandText = "SELECT * FROM Teachers WHERE 1=1";
+
+            // Add search key condition if provided
+            if (!string.IsNullOrEmpty(searchKey))
+            {
+                cmd.CommandText += " AND (LOWER(teacherfname) LIKE LOWER(@Key) OR LOWER(teacherlname) LIKE LOWER(@Key) OR LOWER(CONCAT(teacherfname, ' ', teacherlname)) LIKE LOWER(@Key) or hiredate Like @Key or DATE_FORMAT(hiredate, '%d-%m-%Y') Like @Key or salary LIKE @Key)";
+                cmd.Parameters.AddWithValue("@Key", "%" + searchKey + "%");
+            }
+
+            // Add date range conditions if provided
+            if (minDate.HasValue)
+            {
+                cmd.CommandText += " AND hiredate >= @minDate";
+                cmd.Parameters.AddWithValue("@minDate", minDate.Value);
+            }
+
+            if (maxDate.HasValue)
+            {
+                cmd.CommandText += " AND hiredate <= @maxDate";
+                cmd.Parameters.AddWithValue("@maxDate", maxDate.Value);
+            }
+
             cmd.Prepare();
 
             MySqlDataReader ResultSet = cmd.ExecuteReader();
@@ -189,7 +214,6 @@ namespace Cummulative1_schooldb.Controllers
         ///     "Salary": 55000.00
         /// }
         /// </returns>
-        /// 
         [HttpPost]
         [Route("api/TeacherData/AddTeacher")]
         public IHttpActionResult AddTeacher([FromBody] Teacher NewTeacher)
@@ -207,7 +231,7 @@ namespace Cummulative1_schooldb.Controllers
                 return BadRequest("Hire date cannot be in the future");
             }
 
-            // Initiative 3: Error Handling on Add when the Employee Number is not “T” followed by digits
+            // Initiative 3: Error Handling on Add when the Employee Number is not "T" followed by digits
             if (string.IsNullOrWhiteSpace(NewTeacher.EmployeeNumber) ||
                 !System.Text.RegularExpressions.Regex.IsMatch(NewTeacher.EmployeeNumber, @"^T[0-9]{3}$"))
             {
@@ -255,7 +279,6 @@ namespace Cummulative1_schooldb.Controllers
         /// Note: This will first unassign any courses taught by this teacher
         /// Example request: DELETE /api/TeacherData/DeleteTeacher/5
         /// </returns>
-
         [HttpDelete]
         [Route("api/TeacherData/DeleteTeacher/{id}")]
         public IHttpActionResult DeleteTeacher(int id)
@@ -280,6 +303,77 @@ namespace Cummulative1_schooldb.Controllers
             Conn.Close();
 
             return rowsAffected > 0 ? Ok("Teacher deleted successfully") : (IHttpActionResult)NotFound();
+        }
+
+        /// <summary>
+        /// Updates an existing teacher in the system with validation checks
+        /// </summary>
+        /// <param name="id">The ID of the teacher to update</param>
+        /// <param name="TeacherInfo">Teacher object containing the updated information</param>
+        /// <returns>
+        /// - HTTP 200 OK if update was successful
+        /// - HTTP 400 Bad Request if validation fails
+        /// - HTTP 404 Not Found if teacher doesn't exist
+        /// Example request: PUT /api/TeacherData/UpdateTeacher/5
+        /// </returns>
+        [HttpPut]
+        [Route("api/TeacherData/UpdateTeacher/{id}")]
+        public IHttpActionResult UpdateTeacher(int id, [FromBody] Teacher TeacherInfo)
+        {
+            if (id <= 0)
+            {
+                return BadRequest("Invalid Teacher ID");
+            }
+
+            // Initiative 1: Error Handling on Update when Teacher Name is empty (Server)
+            if (string.IsNullOrWhiteSpace(TeacherInfo.TeacherFname) ||
+                string.IsNullOrWhiteSpace(TeacherInfo.TeacherLname))
+            {
+                return BadRequest("Teacher first and last name are required");
+            }
+
+            // Initiative 2: Error Handling on Update when Hire Date is in future (Server)
+            if (TeacherInfo.HireDate > DateTime.Now)
+            {
+                return BadRequest("Hire date cannot be in the future");
+            }
+
+            // Initiative 3: Error Handling on Update when Salary is negative (Server)
+            if (TeacherInfo.Salary < 0)
+            {
+                return BadRequest("Salary cannot be negative");
+            }
+
+            MySqlConnection Conn = Cummulative1_schooldb.AccessDatabase();
+            Conn.Open();
+
+            // Initiative 4: Error Handling on Update when teacher doesn't exist (Server)
+            MySqlCommand checkCmd = Conn.CreateCommand();
+            checkCmd.CommandText = "SELECT COUNT(*) FROM teachers WHERE teacherid = @id";
+            checkCmd.Parameters.AddWithValue("@id", id);
+
+            if (Convert.ToInt32(checkCmd.ExecuteScalar()) == 0)
+            {
+                Conn.Close();
+                return NotFound();
+            }
+
+            // Update the teacher
+            MySqlCommand cmd = Conn.CreateCommand();
+            cmd.CommandText = "UPDATE teachers SET teacherfname=@fname, teacherlname=@lname, " +
+                             "hiredate=@hiredate, salary=@salary WHERE teacherid=@id";
+
+            cmd.Parameters.AddWithValue("@fname", TeacherInfo.TeacherFname);
+            cmd.Parameters.AddWithValue("@lname", TeacherInfo.TeacherLname);
+            cmd.Parameters.AddWithValue("@hiredate", TeacherInfo.HireDate);
+            cmd.Parameters.AddWithValue("@salary", TeacherInfo.Salary);
+            cmd.Parameters.AddWithValue("@id", id);
+
+            cmd.ExecuteNonQuery();
+            Conn.Close();
+
+            // Return the updated teacher information
+            return Ok(TeacherInfo);
         }
     }
 }
