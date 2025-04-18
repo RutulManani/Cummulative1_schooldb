@@ -10,31 +10,25 @@
         <a href="/TeacherPage/New" class="navlink" style="background-color: #5cb85c; color: white; padding: 8px 15px; border-radius: 4px;">Add New Teacher</a>
     </div>
 
-    <!-- Search by Name/Details Section -->
+    <!-- Search Section -->
     <div class="search-section">
-        <h3>Search by Name</h3>
-        <form action="/TeacherPage/List" method="GET" class="search-form">
-            <div class="search-option">
-                <input type="text" name="SearchKey" id="SearchKey" placeholder="Enter here" autocomplete="off" style="flex-grow: 1;" />
-                <input type="submit" value="Search" />
-            </div>
-        </form>
-    </div>
-
-    <!-- Search by Hire Date Range Section -->
-    <div class="search-section">
-        <h3>Search by Hire Date Range</h3>
-        @using (Html.BeginForm("SearchByHireDate", "TeacherPage", FormMethod.Post, new { @class = "search-form" }))
+        <h3>Search by Name or Hire Date</h3>
+        @using (Html.BeginForm("ListAdvanced", "TeacherPage", FormMethod.Get))
         {
             <div class="search-option">
-                <label for="minDate">From:</label>
-                <input type="date" name="minDate" id="minDate" required />
+                <label for="searchKey">Name/Details:</label>
+                <input type="text" name="searchKey" id="searchKey" placeholder="Enter here" value="@Request.QueryString["searchKey"]" />
             </div>
             <div class="search-option">
-                <label for="maxDate">To:</label>
-                <input type="date" name="maxDate" id="maxDate" required />
+                <label for="minDate">Hired After:</label>
+                <input type="date" name="minDate" id="minDate" value="@Request.QueryString["minDate"]" />
             </div>
-            <input type="submit" value="Search by Date" />
+            <div class="search-option">
+                <label for="maxDate">Hired Before:</label>
+                <input type="date" name="maxDate" id="maxDate" value="@Request.QueryString["maxDate"]" />
+            </div>
+            <input type="submit" value="Search" class="search-button" />
+            <a href="/TeacherPage/List" class="clear-search">Clear Filters</a>
         }
     </div>
 
@@ -73,7 +67,6 @@
         </table>
     }
 </div>
-
 
 <style>
     body {
@@ -122,6 +115,33 @@
         .search-option label {
             min-width: 50px;
         }
+
+    .search-button {
+        background-color: #4CAF50;
+        color: white;
+        padding: 8px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-right: 10px;
+    }
+
+    .clear-search {
+        color: #0066cc;
+        text-decoration: none;
+        padding: 8px 15px;
+        border-radius: 4px;
+        background-color: #f0f0f0;
+    }
+
+    .search-button:hover {
+        background-color: #45a049;
+    }
+
+    .clear-search:hover {
+        background-color: #e0e0e0;
+        text-decoration: none;
+    }
 
     input[type="text"],
     input[type="date"],
